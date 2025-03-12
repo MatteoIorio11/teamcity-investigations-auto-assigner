@@ -30,12 +30,9 @@ public class ProblemTextExtractor {
       final Integer compileBlockIndex = getCompileBlockIndex(problem);
       if (compileBlockIndex != null) {
         AtomicInteger maxErrors = new AtomicInteger(TeamCityProperties.getInteger(Constants.MAX_COMPILE_ERRORS_TO_PROCESS, 100));
-        BuildLogCompileErrorCollector.collectCompileErrors(compileBlockIndex, build, new ItemProcessor<LogMessage>() {
-          @Override
-          public boolean processItem(final LogMessage item) {
-            problemSpecificText.append(item.getText()).append(" ");
-            return maxErrors.decrementAndGet() > 0;
-          }
+        BuildLogCompileErrorCollector.collectCompileErrors(compileBlockIndex, build, item -> {
+          problemSpecificText.append(item.getText()).append(" ");
+          return maxErrors.decrementAndGet() > 0;
         });
       }
     }
