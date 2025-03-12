@@ -16,6 +16,22 @@
 
 package jetbrains.buildServer.investigationsAutoAssigner.utils.errors;
 
-public class BuildProblemProcessorFactory {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import jetbrains.buildServer.BuildProblemTypes;
+import org.jetbrains.annotations.NotNull;
 
+public class BuildProblemProcessorFactory {
+  private final static Map<String, BuildProblemProcessor> processors = new HashMap<>();
+  static {
+    processors.put(BuildProblemTypes.TC_COMPILATION_ERROR_TYPE, new CompilationErrorProcessor());
+  }
+
+  private BuildProblemProcessorFactory() {
+  }
+
+  public static Optional<BuildProblemProcessor> getProcessor(@NotNull final String type) {
+    return Optional.ofNullable(processors.get(type));
+    }
 }
