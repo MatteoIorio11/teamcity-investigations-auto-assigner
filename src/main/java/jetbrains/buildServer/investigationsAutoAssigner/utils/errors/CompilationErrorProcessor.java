@@ -16,13 +16,27 @@
 
 package jetbrains.buildServer.investigationsAutoAssigner.utils.errors;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import jetbrains.buildServer.investigationsAutoAssigner.common.Constants;
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
+import jetbrains.buildServer.serverSide.problems.BuildLogCompileErrorCollector;
 import jetbrains.buildServer.serverSide.problems.BuildProblem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CompilationErrorProcessor implements BuildProblemProcessor {
   @Override
-  public String process(@NotNull final BuildProblem buildProblem, @NotNull final SBuild build) {
-    return null;
+  public String process(@NotNull final BuildProblem buildProblem, @NotNull final SBuild build, @Nullable Integer compileBlockIndex) {
+    final StringBuilder problemSpecificText = new StringBuilder();
+    if (compileBlockIndex != null) {
+      final AtomicInteger maxErrors =
+        new AtomicInteger(TeamCityProperties.getInteger(Constants.MAX_COMPILE_ERRORS_TO_PROCESS, 100));
+      BuildLogCompileErrorCollector.collectCompileErrors(compileBlockIndex, build, item -> {
+        problemSpecificText.append(item.getText()).append(" ");
+        return maxErrors.decrementAndGet() > 0;
+      });
+    }
+    return problemSpecificText + " " + buildProblem.getBuildProblemDescription();
   }
 }
