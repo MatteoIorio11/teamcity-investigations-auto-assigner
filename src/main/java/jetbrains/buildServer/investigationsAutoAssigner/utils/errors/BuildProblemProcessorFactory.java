@@ -17,4 +17,5 @@
 package jetbrains.buildServer.investigationsAutoAssigner.utils.errors;
 
 public class BuildProblemProcessorFactory {
+
 }
