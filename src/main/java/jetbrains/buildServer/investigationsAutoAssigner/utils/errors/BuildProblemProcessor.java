@@ -22,5 +22,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface BuildProblemProcessor {
+  /**
+   * Process build problem and return a string with the problem description.
+   *
+   * @param buildProblem the build problem to process
+   * @param build the build where the problem occurred
+   * @param compileBlockIndex the index of the compilation block in the build log
+   * @return the problem description
+   */
   String process(@NotNull BuildProblem buildProblem, @NotNull SBuild build, @Nullable Integer compileBlockIndex);
 }
