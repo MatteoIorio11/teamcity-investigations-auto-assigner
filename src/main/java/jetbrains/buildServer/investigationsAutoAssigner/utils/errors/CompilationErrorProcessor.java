@@ -37,6 +37,6 @@ public class CompilationErrorProcessor implements BuildProblemProcessor {
         return maxErrors.decrementAndGet() > 0;
       });
     }
-    return problemSpecificText + " " + buildProblem.getBuildProblemDescription();
+    return problemSpecificText.toString();
   }
 }
