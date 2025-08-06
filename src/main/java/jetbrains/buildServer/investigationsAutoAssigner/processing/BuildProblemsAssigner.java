@@ -18,6 +18,7 @@ import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.WebLinks;
 import jetbrains.buildServer.serverSide.problems.BuildProblem;
 import jetbrains.buildServer.serverSide.problems.BuildProblemInfo;
+import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,15 +30,18 @@ public class BuildProblemsAssigner implements BaseAssigner {
   private final StatisticsReporter myStatisticsReporter;
   private final WebLinks myWebLinks;
   private final TargetProjectFinder myTargetProjectFinder;
+  private final AbstractFavoriteBuildAssigner myFavoriteBuildAssigner;
 
   public BuildProblemsAssigner(@NotNull final BuildProblemResponsibilityFacade buildProblemResponsibilityFacade,
                                @NotNull final WebLinks webLinks,
                                @NotNull final StatisticsReporter statisticsReporter,
-                               @NotNull final TargetProjectFinder targetProjectFinder) {
+                               @NotNull final TargetProjectFinder targetProjectFinder,
+                               @NotNull final AbstractFavoriteBuildAssigner favoriteBuildAssigner) {
     myBuildProblemResponsibilityFacade = buildProblemResponsibilityFacade;
     myStatisticsReporter = statisticsReporter;
     myWebLinks = webLinks;
     myTargetProjectFinder = targetProjectFinder;
+    myFavoriteBuildAssigner = favoriteBuildAssigner;
   }
 
   void assign(final HeuristicResult heuristicsResult,
@@ -77,6 +81,7 @@ public class BuildProblemsAssigner implements BaseAssigner {
             ResponsibilityEntry.State.TAKEN, responsibility.getUser(), null, Dates.now(),
             responsibility.getAssignDescription(linkToBuild), getRemoveMethod(sBuild.getBuildType()))
         );
+        myFavoriteBuildAssigner.markAsFavorite(sBuild, (SUser)responsibility.getUser());
 
         myStatisticsReporter.reportAssignedInvestigations(buildProblemList.size(), responsibility);
       }
